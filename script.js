@@ -1,113 +1,146 @@
 const cultos = [
- "Sáb 17h (TADEL)",
- "Dom 09h30 (TADEL)",
- "Dom 11h30",
- "Dom 16h30 (TADEL)",
- "Dom 18h30",
- "Dom 20h30",
- "Seg 20h",
- "Não conseguirei servir 😢"
+  "Sáb 17h (TADEL)",
+  "Dom 09h30 (TADEL)",
+  "Dom 11h30",
+  "Dom 16h30 (TADEL)",
+  "Dom 18h30",
+  "Dom 20h30",
+  "Seg 20h",
+  "Não conseguirei servir 😢"
 ];
 
 const SEMANA_FIXA = 3;
+const LIMITE_POR_CULTO = 2;
 
 // ===== DATA =====
 const agora = new Date();
 const ano = agora.getFullYear();
 const mesNum = String(agora.getMonth() + 1).padStart(2, "0");
-const mesTxt = agora.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+const mesTxt = agora.toLocaleDateString("pt-BR", {
+  month: "long",
+  year: "numeric"
+});
 const storageKey = `backstage_${ano}-${mesNum}_semana${SEMANA_FIXA}`;
 
 document.getElementById("titulo").innerText =
-"Em qual culto você consegue servir?";
+  "Em qual culto você consegue servir?";
 document.getElementById("subtitulo").innerText =
-`3ª semana • ${mesTxt}`;
+  `3ª semana • ${mesTxt}`;
 
 // ===== HORÁRIO DA VOTAÇÃO =====
-function votacaoAberta(){
+function votacaoAberta() {
   const d = new Date();
-  const dia = d.getDay();
+  const dia = d.getDay(); // 0 dom
   const hora = d.getHours();
-  if(dia < 2) return false;
-  if(dia > 5) return false;
-  if(dia === 5 && hora >= 12) return false;
+
+  if (dia < 2) return false;       // antes de terça
+  if (dia > 5) return false;       // depois de sexta
+  if (dia === 5 && hora >= 12) return false; // sexta após 12h
+
   return true;
 }
 
 // ===== OPÇÕES =====
 const opcoesDiv = document.getElementById("opcoes");
-cultos.forEach(c=>{
+cultos.forEach(c => {
   opcoesDiv.innerHTML += `
-  <label class="opcao">
-    <input type="checkbox" value="${c}">
-    <div class="texto-opcao">${c}</div>
-  </label>`;
+    <label class="opcao">
+      <input type="checkbox" value="${c}">
+      <div class="texto-opcao">${c}</div>
+    </label>
+  `;
 });
 
 // ===== VOTAR =====
-function votar(){
-  if(!votacaoAberta())
-    return msg("⛔ Votação aberta de terça até sexta às 12h");
+function votar() {
+  if (!votacaoAberta()) {
+    return msg("⛔ Votação aberta somente de terça até sexta às 12h");
+  }
 
   const nome = document.getElementById("nome").value.trim();
-  if(nome.length < 3)
-    return msg("Digite seu nome completo");
+  if (nome.length < 3) {
+    return msg("⚠️ Digite seu nome completo");
+  }
 
   const selecionados = [...document.querySelectorAll("input:checked")];
-  if(selecionados.length === 0)
-    return msg("Selecione pelo menos um culto");
+  if (selecionados.length === 0) {
+    return msg("⚠️ Selecione pelo menos um culto");
+  }
 
   let dados = JSON.parse(localStorage.getItem(storageKey)) || {};
 
-  selecionados.forEach(i=>{
-    if(!dados[i.value]) dados[i.value] = [];
-    if(dados[i.value].length >= 2) return;
-    if(!dados[i.value].includes(nome))
-      dados[i.value].push(nome);
+  // 🔒 VERIFICA LIMITE ANTES DE SALVAR
+  for (let item of selecionados) {
+    const culto = item.value;
+    const lista = dados[culto] || [];
+
+    if (lista.length >= LIMITE_POR_CULTO) {
+      return msg(`❌ NEGADO: ${culto} já possui ${LIMITE_POR_CULTO} pessoas`);
+    }
+  }
+
+  // ✅ SALVA
+  selecionados.forEach(item => {
+    const culto = item.value;
+    if (!dados[culto]) dados[culto] = [];
+
+    if (!dados[culto].includes(nome)) {
+      dados[culto].push(nome);
+    }
   });
 
   localStorage.setItem(storageKey, JSON.stringify(dados));
+
+  // LIMPA CHECKBOX
+  document.querySelectorAll("input:checked")
+    .forEach(i => i.checked = false);
+
   msg("✅ Voto registrado com sucesso");
 }
 
 // ===== UI =====
-function msg(t){
-  document.getElementById("msg").innerText = t;
+function msg(texto) {
+  document.getElementById("msg").innerText = texto;
 }
 
-function toggleTheme(){
+// ===== TEMA =====
+function toggleTheme() {
   document.body.classList.toggle("dark");
   document.body.classList.toggle("light");
 }
 
 // ===== RELÓGIO / DATA =====
-function atualizarRelogio(){
+function atualizarRelogio() {
   const d = new Date();
   document.getElementById("clock").innerText =
     d.toLocaleTimeString("pt-BR");
   document.getElementById("data").innerText =
-    d.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"});
+    d.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit"
+    });
 }
-setInterval(atualizarRelogio,1000);
+setInterval(atualizarRelogio, 1000);
 atualizarRelogio();
 
-// ===== CONTADOR =====
-function contador(){
+// ===== CONTADOR DE FECHAMENTO =====
+function contador() {
   const agora = new Date();
   let fim = new Date();
-  fim.setDate(agora.getDate()+((5-agora.getDay()+7)%7));
-  fim.setHours(12,0,0,0);
-  const diff = fim-agora;
+  fim.setDate(agora.getDate() + ((5 - agora.getDay() + 7) % 7));
+  fim.setHours(12, 0, 0, 0);
 
-  if(diff<=0){
-    document.getElementById("contador").innerText="Votação encerrada";
+  const diff = fim - agora;
+  if (diff <= 0) {
+    document.getElementById("contador").innerText = "Votação encerrada";
     return;
   }
 
-  const h = Math.floor(diff/36e5);
-  const m = Math.floor(diff/6e4)%60;
+  const h = Math.floor(diff / 36e5);
+  const m = Math.floor(diff / 6e4) % 60;
   document.getElementById("contador").innerText =
     `⏳ Fecha em ${h}h ${m}min`;
 }
-setInterval(contador,60000);
+setInterval(contador, 60000);
 contador();
