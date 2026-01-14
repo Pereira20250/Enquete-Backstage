@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>BACKSTAGE</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#075e54">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
+</head>
+
+<body class="dark">
+
+  <!-- HEADER -->
+  <header class="header-center">
+    <img src="logo.png" class="logo" alt="BACKSTAGE">
+
+    <div class="center-info">
+      <div id="clock" class="clock"></div>
+      <div id="data" class="data"></div>
+      <div id="contador" class="contador"></div>
+    </div>
+
+    <div class="top-btns">
+      <button onclick="toggleTheme()" title="Mudar tema">🌙</button>
+      <a href="adm.html" class="adm-top" title="Área ADM">🔐</a>
+    </div>
+  </header>
+
+  <!-- AVISO -->
+  <div id="aviso" class="aviso hidden"></div>
+
+  <!-- CONTEÚDO -->
+  <main class="main-center">
+
+    <h3 id="titulo"></h3>
+    <p id="subtitulo"></p>
+
+    <input
+      type="text"
+      id="nome"
+      placeholder="Seu nome completo"
+      autocomplete="name"
+    >
+
+    <div id="opcoes"></div>
+
+    <button class="btn" onclick="votar()">Confirmar voto</button>
+
+    <p id="msg"></p>
+
+  </main>
+
+  <!-- JS -->
+  <script src="script.js"></script>
+
+  <!-- SERVICE WORKER -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+
+</body>
+</html>

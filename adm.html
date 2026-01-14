@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>BACKSTAGE • ADM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<link rel="shortcut icon" href="logo.ico" type="image/x-icon">
+</head>
+
+<body class="dark">
+
+<header class="adm-header">
+  <div>
+    <strong>BACKSTAGE</strong><br>
+    <small>Área Administrativa</small>
+  </div>
+
+  <div class="adm-actions">
+    <a href="index.html" class="btn-voltar">⬅ Voltar</a>
+    <div id="clock" class="clock"></div>
+  </div>
+</header>
+
+<main class="adm-main">
+
+<section id="login" class="card">
+  <h3>🔐 Acesso ADM</h3>
+  <input type="password" id="senha" placeholder="Senha administrativa">
+  <button onclick="login()">Entrar</button>
+</section>
+
+<section id="painel" class="card hidden">
+
+  <div class="painel-topo">
+    <h3>📊 Enquete • 3ª Semana</h3>
+    <span id="mesRef"></span>
+  </div>
+
+  <textarea id="saida" readonly></textarea>
+
+  <div class="acoes">
+    <button onclick="copiar()">📋 Copiar para WhatsApp</button>
+  </div>
+
+  <hr>
+
+  <h4>📊 Ranking por Culto</h4>
+  <div id="ranking"></div>
+
+  <hr>
+
+  <h4>👤 Total de Pessoas</h4>
+  <div id="contadorPessoas" class="contador-box"></div>
+
+</section>
+
+</main>
+
+<script src="adm.js"></script>
+</body>
+</html>
