@@ -56,7 +56,7 @@ function renderOpcoes() {
         <input type="checkbox" value="${culto}" ${lotado ? "disabled" : ""}>
         <div class="texto-opcao">
           ${culto}
-          ${lotado ? `<span class="status-lotado"> • LOTADO (2/2)</span>` : ""}
+          ${lotado ? `<span class="status-lotado"> • LOTADO (3/3)</span>` : ""}
         </div>
       </label>
     `;
@@ -150,3 +150,4 @@ function contador() {
 }
 setInterval(contador, 60000);
 contador();
+
