@@ -174,4 +174,15 @@ input,textarea{
   border-radius:8px;
   text-align:center;
   font-weight:bold;
+
+}
+
+.opcao.lotado{
+  opacity:0.5;
+}
+
+.status-lotado{
+  color:#ff4d4d;
+  font-size:13px;
+  font-weight:bold;
 }
